@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <SDKs_dir>D:\SDKs\</SDKs_dir>
+    <freeglut_dir>$(SDKs_dir)OpenGL\freeglut\</freeglut_dir>
+    <freeglut_include>$(freeglut_dir)include\GL\</freeglut_include>
+    <freeglut_bin>$(freeglut_dir)bin\</freeglut_bin>
+    <freeglut_lib>$(freeglut_dir)lib\</freeglut_lib>
+    <glm_dir>$(SDKs_dir)OpenGL\glm\</glm_dir>
+    <glm_include>$(glm_dir)glm\</glm_include>
+    <glew_dir>D:\SDKs\OpenGL\glew-1.12.0\</glew_dir>
+    <glew_include>$(glew_dir)include\GL\</glew_include>
+    <glew_bin>$(glew_dir)bin\Release\Win32\</glew_bin>
+    <glew_lib>$(glew_dir)lib\Release\Win32\</glew_lib>
+    <glfw_dir>$(SDKs_dir)OpenGL\glfw-3.1\</glfw_dir>
+    <glfw_include>$(glfw_dir)include\GLFW\</glfw_include>
+    <glfw_lib>$(glfw_dir)bin\Debug\</glfw_lib>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="SDKs_dir">
+      <Value>$(SDKs_dir)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="freeglut_dir">
+      <Value>$(freeglut_dir)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="freeglut_include">
+      <Value>$(freeglut_include)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="freeglut_bin">
+      <Value>$(freeglut_bin)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="freeglut_lib">
+      <Value>$(freeglut_lib)</Value>
+    </BuildMacro>
+    <BuildMacro Include="glm_dir">
+      <Value>$(glm_dir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="glm_include">
+      <Value>$(glm_include)</Value>
+    </BuildMacro>
+    <BuildMacro Include="glew_dir">
+      <Value>$(glew_dir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="glew_include">
+      <Value>$(glew_include)</Value>
+    </BuildMacro>
+    <BuildMacro Include="glew_bin">
+      <Value>$(glew_bin)</Value>
+    </BuildMacro>
+    <BuildMacro Include="glew_lib">
+      <Value>$(glew_lib)</Value>
+    </BuildMacro>
+    <BuildMacro Include="glfw_dir">
+      <Value>$(glfw_dir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="glfw_include">
+      <Value>$(glfw_include)</Value>
+    </BuildMacro>
+    <BuildMacro Include="glfw_lib">
+      <Value>$(glfw_lib)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
