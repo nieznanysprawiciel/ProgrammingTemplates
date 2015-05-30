@@ -2,7 +2,7 @@
 
 /**@file DX11_interfaces_container.h
 @brief Zaiwiera deklaracjê klasy DX11_interfaces_container i DX11_constant_buffers_container s³u¿¹cych do
-Inicjowania i przechowywania obiektów DirectXa.*/
+inicjowania i przechowywania obiektów DirectXa.*/
 
 #include <string>
 
@@ -12,30 +12,34 @@ Inicjowania i przechowywania obiektów DirectXa.*/
 #pragma warning( default : 4005 )
 
 
+typedef ID3D11DeviceContext DeviceContext;
+typedef ID3D11Device Device;
 
 
+/**Kody b³êdów zwracane przez funkcje klasy DX11_interfaces_container.*/
 enum DX11_INIT_RESULT
 {
-	DX11_INIT_OK,
-	NO_CLASS_INHERTIS_THIS_INTERFACE,
-	COULD_NOT_INIT_DEVICES_AND_SWAPCHAIN,
-	COULD_NOT_CREATE_BACKBUFFER,
-	COULD_NOT_CREATE_RENDERTARGET,
-	COULD_NOT_CREATE_DEPTHSTENCIL,
-	COULD_NOT_CREATE_DEPTHSTENCIL_VIEW,
-	COULD_NOT_CREATE_PIXEL_SHADER,
-	COULD_NOT_CREATE_VERTEX_SHADER,
-	COULD_NOT_CREATE_SAMPLER,
-	DX11_DEVICE_NOT_INITIALIZED,
-	DX11_DEVICECONTEXT_NOT_INITIALIZED
+	DX11_INIT_OK,								///< Funkcja wykonana poprawnie
+	NO_CLASS_INHERTIS_THIS_INTERFACE,			///< ¯adna klasa nie odziedziczy³a po DX11_interfaces_container. Zmienne s¹ niezainicjalizowane.
+	COULD_NOT_INIT_DEVICES_AND_SWAPCHAIN,		///< Nie uda³o siê utworzyæ obieków device, device_context i swap_chain.
+	COULD_NOT_CREATE_BACKBUFFER,				///< Nie uda³o siê utworzyæ bufora tylnego.
+	COULD_NOT_CREATE_RENDERTARGET,				///< Nie uda³o siê zainicjowaæ widoku na bufor tylni.
+	COULD_NOT_CREATE_DEPTHSTENCIL,				///< Nie usta³o siê stworzyæ bufora g³êbokoœci.
+	COULD_NOT_CREATE_DEPTHSTENCIL_VIEW,			///< Nie uda³o siê stworzyæ widoku na bufor g³êbokoœci.
+	COULD_NOT_CREATE_PIXEL_SHADER,				///< Nie uda³o siê skompilowaæ pixel shadera.
+	COULD_NOT_CREATE_VERTEX_SHADER,				///< Nie uda³o siê skompilowaæ vertex shadera.
+	COULD_NOT_CREATE_SAMPLER,					///< Nie uda³o siê utworzyæ obiektu samplera.
+	DX11_DEVICE_NOT_INITIALIZED,				///< DirectX nie zosta³ zainicjowany (obiekt device wskazuje na nullptr).
+	DX11_DEVICECONTEXT_NOT_INITIALIZED			///< DirectX nie zosta³ zainicjowany (obiekt device_context wskazuje na nullptr).
 };
 
+/**Enumeruje wbudowane typy layoutów.*/
 enum DX11_DEFAULT_VERTEX_LAYOUT
 {
-	VERTEX_NORMAL_TEXTURE = 0,
-	VERTEX_TEXTURE = 1,
-	VERTEX_COLOR = 2,
-	VERTEX_NORMAL_COLOR = 3
+	VERTEX_NORMAL_TEXTURE = 0,			///< Pozycja, normalne wspó³rzêdne UV
+	VERTEX_TEXTURE = 1,					///< Pozycja, wspó³rzêdne UV
+	VERTEX_COLOR = 2,					///< Pozycja, kolor
+	VERTEX_NORMAL_COLOR = 3				///< Pozycja, normalne, kolor
 };
 
 /**@brief Klasa przechowuje w zmiennych statycznych najwa¿niejsze interfejsy
@@ -44,19 +48,14 @@ DirectX11.
 Obiekty, które ich potrzebuj¹, powinny odziedziczyæ po tej klasie,
 dziêki czemu maj¹ bezpoœredni dostêp.
 
-Poza tym zawiera troszkê funkcji u³atwiaj¹cych tworzenie projektu DirectX.
+Aby naj³atwiej zainicjowaæ DirectX, najlepiej jest wywo³aæ funkcjê init_DX11.
+Z wyj¹tkiem rzeczy podawanych w parametrach, wszystko zostanie zainicjowane zgodnie z deskryptorami
+domyœlnymi. Je¿eli chcesz coœ zmieniæ, to musisz to zrobiæ przed wywo³aniem tej funkcji.
 
-Za zainicjowanie zmiennych odpowiednimi wartoœciami odpowiada tylko i wy³¹cznie
-klasa Engine. Formalna inicjacja zmiennych statycznych odbywa siê w pliku 
-DX11_interfaces_container.cpp (formalna, czyli mam na myœli, ¿e inicjacja nullptrami).
+Mo¿na te¿ inicjowaæ ka¿d¹ rzecz z osobna, ale w zasadzie nie ma to wiêkszego sensu,
+skoro wiszystkie deskryptory mo¿na zmodyfikowaæ.
 
-Klasa zawiera te¿ metody do zainicjowania odpowiednich komponentów.
-Oczywiœcie wywo³aæ je ma prawo te¿ tylko i wy³¹cznie klasa Engine.
-
-W przypadku b³êdów innych ni¿ zwróconych przez DirectXa funkcje zwracaj¹ makro
-DXGI_ERROR_CANNOT_PROTECT_CONTENT. Mam nadziejê, ¿e to jest tak rzadko zwracana wartoœæ,
-¿e bêdzie doœæ jednoznacznie mówiæ, ¿e b³¹d jest innego typu ni¿ DirectXowy. Niestety nie wiem wed³ug
-jakiego klucza s¹ tworzone te kody b³êdów, wiêc nie mogê stworzyæ swojego.*/
+Klasa daje te¿ mo¿liwoœæ kompilowania shaderów.*/
 
 class DX11_interfaces_container
 {
@@ -84,12 +83,12 @@ protected:
 	static IDXGISwapChain*			swap_chain;				///<S³u¿y do prezentowania ramki na ekranie
 	static ID3D11RenderTargetView*	render_target;			///<Widok bufora docelowego renderowania, czyli bufora tylnego
 	static ID3D11DepthStencilView*	z_buffer_view;			///<Widok z-buffora
-	
+
 	static ID3D11SamplerState*		default_sampler;		///<Obiekt domyœlnego samplera
 	static ID3D11InputLayout*		default_vertex_layout;	///<Layout formatu wierzcho³ka u¿ywanego dla meshy
 	static ID3D11VertexShader*		default_vertex_shader;	///<Obiekt domyœlnego vertex shadera
 	static ID3D11PixelShader*		default_pixel_shader;	///<Obiekt domyœlnego piksel shadera
-public:
+protected:	//public:	Inicjalizacje powinien zrobiæ obiekt, który dzidziczy po tej klasie, dlatego zmieni³em.
 	// Funkcje do ustawiania deskryptorów i innych parametrów
 	void set_swapchain_desc( const DXGI_SWAP_CHAIN_DESC& swap_chain_desc );
 	void set_viewport_desc( const D3D11_VIEWPORT& view_port_desc );
@@ -136,7 +135,7 @@ protected:
 
 	virtual void release_DirectX();
 
-	void begin_scene( );
+	void begin_scene();
 	inline void end_scene_and_present() { swap_chain->Present( 1, 0 ); }	///<Wywo³uje funkcjê swap_chain->Present w celu wyœwietlenia narysowanej sceny na monitorze
 };
 
@@ -157,7 +156,7 @@ protected:
 	static ID3D11DepthStencilState*		depth_enabled;		///<Do w³¹czania z-bufora
 	static ID3D11DepthStencilState*		depth_disabled;		///<Do wy³¹czania z-bufora
 
-	void init_buffers(unsigned int size_per_frame, unsigned int size_per_mesh);
+	void init_buffers( unsigned int size_per_frame, unsigned int size_per_mesh );
 	void init_depth_states();
 
 	void release_DirectX() override;

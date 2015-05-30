@@ -1,7 +1,8 @@
+#include "stdafx.h"
 #include "DX11_interfaces_container.h"
 
 
-//#include "..\memory_leaks.h"
+#include "memory_leaks.h"
 
 //----------------------------------------------------------------------------------------------//
 //								Zmienne statyczne klasy											//
@@ -77,14 +78,14 @@ D3D11_INPUT_ELEMENT_DESC vertex_normal_color[] =
 };
 
 D3D11_INPUT_ELEMENT_DESC* layouts[] = { vertex_normal_texture,
-										vertex_texture,
-										vertex_color,
-										vertex_normal_color
-										};
+vertex_texture,
+vertex_color,
+vertex_normal_color
+};
 unsigned int layouts_elements[] = { ARRAYSIZE( vertex_normal_texture ),
-									ARRAYSIZE( vertex_texture ),
-									ARRAYSIZE( vertex_color ),
-									ARRAYSIZE( vertex_normal_color ) };
+ARRAYSIZE( vertex_texture ),
+ARRAYSIZE( vertex_color ),
+ARRAYSIZE( vertex_normal_color ) };
 
 //----------------------------------------------------------------------------------------------//
 //								Inicjalizacja deskryptorów										//
@@ -164,7 +165,7 @@ DX11_interfaces_container::DX11_interfaces_container()
 
 /**@brief Zwalnia wszystkie stworzone obiekty DirectXa.
 */
-void DX11_interfaces_container::release_DirectX( )
+void DX11_interfaces_container::release_DirectX()
 {
 	// Bardzo wa¿ne jest ustawienie zmiennych na nullptr w razie, gdyby jakaœ inna klasa wywo³ywa³a destruktor
 
@@ -172,11 +173,11 @@ void DX11_interfaces_container::release_DirectX( )
 	if ( default_vertex_layout )
 		default_vertex_layout->Release(), default_vertex_layout = nullptr;
 	if ( default_vertex_shader )
-		default_vertex_shader->Release( ), default_vertex_shader = nullptr;
+		default_vertex_shader->Release(), default_vertex_shader = nullptr;
 	if ( default_pixel_shader )
-		default_pixel_shader->Release( ), default_pixel_shader = nullptr;
+		default_pixel_shader->Release(), default_pixel_shader = nullptr;
 	if ( default_sampler )
-		default_sampler->Release( ), default_sampler = nullptr;
+		default_sampler->Release(), default_sampler = nullptr;
 
 	if ( swap_chain )
 		//DirectX nie potrafi siê zamkn¹æ w trybie pe³noekranowym, wiêc musimy go zmieniæ
@@ -184,15 +185,15 @@ void DX11_interfaces_container::release_DirectX( )
 
 	//Zmienne s³u¿¹ce do wyœwietlania
 	if ( z_buffer_view )
-		z_buffer_view->Release( ), z_buffer_view = nullptr;
+		z_buffer_view->Release(), z_buffer_view = nullptr;
 	if ( swap_chain )
-		swap_chain->Release( ), swap_chain = nullptr;
+		swap_chain->Release(), swap_chain = nullptr;
 	if ( render_target )
-		render_target->Release( ), render_target = nullptr;
+		render_target->Release(), render_target = nullptr;
 	if ( device )
-		device->Release( ), device = nullptr;
+		device->Release(), device = nullptr;
 	if ( device_context )
-		device_context->Release( ), device_context = nullptr;
+		device_context->Release(), device_context = nullptr;
 }
 
 
@@ -225,14 +226,14 @@ void DX11_interfaces_container::set_viewport_desc( const D3D11_VIEWPORT& view_po
 {
 	_view_port_desc = view_port_desc;
 
-	_view_port_desc.Height = static_cast<float>( _window_height );
-	_view_port_desc.Width = static_cast<float>( _window_width );
+	_view_port_desc.Height = static_cast<float>(_window_height);
+	_view_port_desc.Width = static_cast<float>(_window_width);
 }
 
 /**@brief ustawia podan¹ w parametrze tablicê z levelami.
 Tablica nie powinna zostaæ usuniêta, poniewa¿ nie jest kopiowana.
 
-Je¿eli nic nie zostanie ustawione to domyœlne ustawiana jest wartoœæ nullptr, co jest 
+Je¿eli nic nie zostanie ustawione to domyœlne ustawiana jest wartoœæ nullptr, co jest
 równowa¿ne podaniu nastêpuj¹cej tablicy:
 D3D_FEATURE_LEVEL_11_0,
 D3D_FEATURE_LEVEL_10_1,
@@ -255,14 +256,14 @@ void DX11_interfaces_container::set_window_resolution( unsigned int window_width
 	_window_width = window_width;
 	_window_height = window_height;
 
-// Uzupe³niamy dane w odpowiednich deskryptorach
+	// Uzupe³niamy dane w odpowiednich deskryptorach
 	// DXGI_SWAP_CHAIN_DESC
 	_swap_chain_desc.BufferDesc.Width = _window_width;
 	_swap_chain_desc.BufferDesc.Height = _window_height;
 
 	// D3D11_VIEWPORT
-	_view_port_desc.Height = static_cast<float>( _window_height );
-	_view_port_desc.Width = static_cast<float>( _window_width );
+	_view_port_desc.Height = static_cast<float>(_window_height);
+	_view_port_desc.Width = static_cast<float>(_window_width);
 
 	// D3D11_TEXTURE2D_DESC Z-Buffer
 	_z_buffer_desc.Height = _window_height;
@@ -297,6 +298,7 @@ void DX11_interfaces_container::set_vertex_layout( D3D11_INPUT_ELEMENT_DESC* lay
 	_layout_elements_count = array_size;
 }
 
+/**Ustawia podany w parametrze deskryptor samplera.*/
 void DX11_interfaces_container::set_sampler_desc( D3D11_SAMPLER_DESC sampler_desc )
 {
 	_sampler_desc = sampler_desc;
@@ -305,11 +307,29 @@ void DX11_interfaces_container::set_sampler_desc( D3D11_SAMPLER_DESC sampler_des
 //----------------------------------------------------------------------------------------------//
 //					Jedna du¿a funkcja, która za³atwia jak najwiêcej							//
 //----------------------------------------------------------------------------------------------//
+
+/**@brief Funkcja do pe³nej inicjalizacji DirectXa.
+
+Je¿eli chcesz zainicjowaæ wszystko na raz, to wywo³aj tê funkcjê.
+Przed wywo³aniem ustaw odpowiednie deskryptory, je¿eli chcesz, ¿eby u¿yte zosta³y
+inne wartoœci ni¿ domyœlne.
+
+@param[in] width Szerokoœæ okna.
+@param[in] height Wysokoœæ okna.
+@param[in] window Uchwyt g³ównego okna aplikacji.
+@param[in] fullscreen Ustaw na true, je¿eli aplikacja ma dzia³aæ w trybie pe³noekranowym.
+@param[in] pix_shader_file Plik zawieraj¹cy shader.
+@param[in] pix_shader_name Nazwa funkcji, od której ma siê zacz¹æ wykonywanie shadera.
+@param[in] vert_shader_file Plik zawieraj¹cy shader.
+@param[in] vert_shader_name Nazwa funkcji, od której ma siê zacz¹æ wykonywanie shadera.
+@param[in] single_thread Ustaw na true, je¿eli nie zamierzasz korzystaæ z ID3D11Device wielow¹tkowo (pozwala to na przyspieszenie dzia³ania
+ze wzglêdu na to, ¿e nie jest konieczna synchronizacja. Nie wiem jak du¿y to ma wp³yw.)
+@return Zwraca jedn¹ ze sta³ych DX11_INIT_RESULT.*/
 DX11_INIT_RESULT DX11_interfaces_container::init_DX11(
-							int width, int height, HWND window, bool fullscreen,
-							const std::wstring& pix_shader_file, const std::string& pix_shader_name,
-							const std::wstring& vert_shader_file, const std::string& vert_shader_name,
-							bool single_thread )
+	int width, int height, HWND window, bool fullscreen,
+	const std::wstring& pix_shader_file, const std::string& pix_shader_name,
+	const std::wstring& vert_shader_file, const std::string& vert_shader_name,
+	bool single_thread )
 {
 	DX11_INIT_RESULT result;
 
@@ -388,7 +408,7 @@ DX11_INIT_RESULT DX11_interfaces_container::init_devices( HWND window, bool full
 											createDeviceFlags, _feature_levels, _num_feature_levels,
 											D3D11_SDK_VERSION, &_swap_chain_desc, &swap_chain,
 											&device, &_current_feature_level, &device_context );
-	if ( FAILED(result) )
+	if ( FAILED( result ) )
 		return COULD_NOT_INIT_DEVICES_AND_SWAPCHAIN;
 
 	if ( fullscreen )
@@ -418,7 +438,7 @@ DX11_INIT_RESULT DX11_interfaces_container::init_z_buffer_and_render_target()
 	if ( !device )
 		return DX11_DEVICE_NOT_INITIALIZED;
 
-// RenderTargetView
+	// RenderTargetView
 	// Tworzymy RenderTargetView. W tym celu pobieramy wskaŸnik na obiekt tylniego bufora
 	// i tworzymy z niego widok.
 	ID3D11Texture2D* back_buffer = nullptr;
@@ -439,15 +459,15 @@ DX11_INIT_RESULT DX11_interfaces_container::init_z_buffer_and_render_target()
 	//zostanie zwolniony dopiero jak wszystkie istniej¹ce obiekty przestan¹ go u¿ywaæ.
 	back_buffer->Release();
 
-// z-buffer
+	// z-buffer
 
 	ID3D11Texture2D* zBuffer;
 
 	result = device->CreateTexture2D( &_z_buffer_desc, nullptr, &zBuffer );
 
-	if ( FAILED(result) )
+	if ( FAILED( result ) )
 	{
-		release_DirectX( );
+		release_DirectX();
 		return COULD_NOT_CREATE_DEPTHSTENCIL;
 	}
 
@@ -456,9 +476,9 @@ DX11_INIT_RESULT DX11_interfaces_container::init_z_buffer_and_render_target()
 
 	zBuffer->Release();
 
-	if ( FAILED(result) )
+	if ( FAILED( result ) )
 	{
-		release_DirectX( );
+		release_DirectX();
 		return COULD_NOT_CREATE_DEPTHSTENCIL_VIEW;
 	}
 
@@ -547,8 +567,8 @@ Na razie obs³uguje tylko nieskompilowane pliki.
 @param[in] shader_model £añcuch znaków opisuj¹cy shader model.
 @return Zwraca wskaŸnik na obiekt vertex shadera lub nullptr w przypadku niepowodzenia.*/
 ID3D11VertexShader* DX11_interfaces_container::load_vertex_shader( const std::wstring& file_name, const std::string& shader_name,
-										ID3D11InputLayout** layout, D3D11_INPUT_ELEMENT_DESC* layout_desc,
-										unsigned int array_size, const char* shader_model = "vs_4_0" )
+																   ID3D11InputLayout** layout, D3D11_INPUT_ELEMENT_DESC* layout_desc,
+																   unsigned int array_size, const char* shader_model = "vs_4_0" )
 {
 	if ( !device )
 		return nullptr;
@@ -686,7 +706,7 @@ DX11_INIT_RESULT DX11_interfaces_container::init_vertex_shader( const std::wstri
 		return DX11_DEVICE_NOT_INITIALIZED;
 	if ( !device_context )
 		return DX11_DEVICECONTEXT_NOT_INITIALIZED;
-	
+
 	default_vertex_shader = load_vertex_shader( file_name, shader_name, &default_vertex_layout, _vertex_layout_desc, _layout_elements_count, _vertex_shader_model.c_str() );
 	if ( !default_vertex_shader )
 		return COULD_NOT_CREATE_VERTEX_SHADER;
@@ -747,7 +767,7 @@ DX11_INIT_RESULT DX11_interfaces_container::init_sampler()
 @attention Funkcja zak³ada, ¿e device_context, render target i depthstencil s¹ utworzone.
 Poniewa¿ funkcja jest wywo³ywana w pêtli renderingu, to nie jest to sprawdzane, wiêc
 programista jest odpowiedzialny za poprawne wywo³anie.*/
-void DX11_interfaces_container::begin_scene( )
+void DX11_interfaces_container::begin_scene()
 {
 	//Bufor tylny
 	float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };	// red, green, blue, alpha
@@ -790,7 +810,7 @@ void DX11_constant_buffers_container::init_buffers( unsigned int size_per_frame,
 
 	// Tworzymy bufor sta³ych w ka¿dej ramce
 	D3D11_BUFFER_DESC buffer_desc;
-	ZeroMemory( &buffer_desc, sizeof(buffer_desc) );
+	ZeroMemory( &buffer_desc, sizeof( buffer_desc ) );
 	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
 	buffer_desc.ByteWidth = size_per_frame;
 	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -807,7 +827,7 @@ void DX11_constant_buffers_container::init_buffers( unsigned int size_per_frame,
 }
 
 
-void  DX11_constant_buffers_container::init_depth_states( )
+void  DX11_constant_buffers_container::init_depth_states()
 {
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 
@@ -847,9 +867,9 @@ zwolniæ wszystkie obiekty, które istniej¹.*/
 void DX11_constant_buffers_container::release_DirectX()
 {
 	if ( const_per_frame )
-		const_per_frame->Release( ), const_per_frame = nullptr;
+		const_per_frame->Release(), const_per_frame = nullptr;
 	if ( const_per_mesh )
-		const_per_mesh->Release( ), const_per_mesh = nullptr;
+		const_per_mesh->Release(), const_per_mesh = nullptr;
 	if ( depth_enabled )
 		depth_enabled->Release();
 	if ( depth_disabled )
