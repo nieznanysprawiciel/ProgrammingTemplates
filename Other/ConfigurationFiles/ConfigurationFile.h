@@ -1,7 +1,16 @@
 #pragma once
-/**@File ConfigurationFile.h
+/**
+@File ConfigurationFile.h
+@author nieznanysprawiciel
+@copywrite CC BY 4.0
+@version 1.01
+
 @brief Zawiera prost¹ klasê do wczytywania plików konfiguracyjnych i pobierania
-otypowanych wartoœci.*/
+otypowanych wartoœci.
+
+Zmiany w kolejnych wersjach:
+1.01 - Poprawka umo¿liwiaj¹ca wpisywanie liczb ujemnych.
+*/
 
 #include <string>
 #include <unordered_map>
