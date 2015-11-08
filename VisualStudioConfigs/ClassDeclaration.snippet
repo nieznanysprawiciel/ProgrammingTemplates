@@ -1,0 +1,32 @@
+<CodeSnippet Format="1.1.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <Header>
+    <Title>Class Declaration</Title>
+    <Author>nieznanysprawiciel</Author>
+    <Shortcut>classdecl</Shortcut>
+    <Description>Inserts class declaration</Description>
+    <SnippetTypes>
+      <SnippetType>Expansion</SnippetType>
+	  <SnippetType>SurroundsWith</SnippetType>
+    </SnippetTypes>
+  </Header>
+  <Snippet>
+		<Declarations>
+			<Literal>
+				<ID>className</ID>
+				<ToolTip>Class name</ToolTip>
+				<Default>NewClass</Default>
+			</Literal>
+		</Declarations>
+    <Code Language="CPP"><![CDATA[
+class $className$
+{
+private:
+protected:
+public:
+	$className$() = default;
+	~$className$() = default;
+
+};
+]]></Code>
+  </Snippet>
+</CodeSnippet>

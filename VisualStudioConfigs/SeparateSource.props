@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <RootDir>$(SolutionDir)..\</RootDir>
+    <RootDir>$(ProjectDir)..\</RootDir>
     <ReleaseName>$(ProjectName)_$(Configuration)_$(PlatformTarget)</ReleaseName>
     <BuildFolder>$(ProjectName)_$(Configuration)_$(PlatformTarget)\</BuildFolder>
     <IntermediateDir>$(RootDir)Intermediate\$(BuildFolder)</IntermediateDir>
@@ -21,7 +21,7 @@
       <ProfileGuidedDatabase>$(IntermediateDir)$(TargetName).pgd</ProfileGuidedDatabase>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(IntermediateDir)$(TargetName).exe" "$(ReleaseDir)$(ReleaseName).exe"</Command>
+      <Command>xcopy "$(IntermediateDir)$(TargetName).exe" "$(ReleaseDir)" /Y /I</Command>
     </PostBuildEvent>
     <Lib>
       <OutputFile>$(IntermediateDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -31,8 +31,7 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>if not exist "$(ReleaseDir)" mkdir "$(ReleaseDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
